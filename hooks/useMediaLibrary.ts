@@ -49,18 +49,32 @@ export function useMediaLibrary() {
         mediaType: [MediaLibrary.MediaType.photo],
         first: 1000,
       });
-      const photoList: Photo[] = assets.assets.map(asset => ({
-        id: asset.id,
-        uri: asset.uri,
-        filename: asset.filename ?? '',
-        creationTime: asset.creationTime ?? 0,
-        modificationTime: asset.modificationTime ?? 0,
-        duration: asset.duration,
-        mediaType: asset.mediaType === 'photo' ? 'photo' : 'video',
-        mediaSubtypes: asset.mediaSubtypes,
-        width: asset.width,
-        height: asset.height,
-      }));
+      // Resolve localUri for each asset
+      const photoList: Photo[] = await Promise.all(
+        assets.assets.map(async asset => {
+          let localUri = asset.uri;
+          try {
+            const info = await MediaLibrary.getAssetInfoAsync(asset.id);
+            if (info.localUri) {
+              localUri = info.localUri;
+            }
+          } catch (e) {
+            // fallback to asset.uri
+          }
+          return {
+            id: asset.id,
+            uri: localUri,
+            filename: asset.filename ?? '',
+            creationTime: asset.creationTime ?? 0,
+            modificationTime: asset.modificationTime ?? 0,
+            duration: asset.duration,
+            mediaType: asset.mediaType === 'photo' ? 'photo' : 'video',
+            mediaSubtypes: asset.mediaSubtypes,
+            width: asset.width,
+            height: asset.height,
+          };
+        })
+      );
       setPhotos(photoList);
       setError(null);
     } catch (e) {
