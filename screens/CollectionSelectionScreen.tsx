@@ -2,6 +2,9 @@ import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, Button } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useMediaLibrary } from '@/hooks/useMediaLibrary';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '@/types/navigation';
 
 export default function CollectionSelectionScreen() {
   const {
@@ -12,6 +15,8 @@ export default function CollectionSelectionScreen() {
     requestPermission,
     fetchAlbums,
   } = useMediaLibrary();
+
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, 'CollectionSelectionScreen'>>();
 
   useEffect(() => {
     if (permissionStatus === 'granted') {
@@ -52,7 +57,7 @@ export default function CollectionSelectionScreen() {
         renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.albumItem}
-            onPress={() => console.log('Selected album:', item)}
+            onPress={() => navigation.navigate('HomeScreen', { album: item })}
           >
             <Text style={styles.albumTitle}>{item.title}</Text>
             <Text style={styles.albumCount}>{item.assetCount} photos</Text>

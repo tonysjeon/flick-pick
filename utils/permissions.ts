@@ -1,9 +1,10 @@
-import * as MediaLibrary from 'expo-media-library';
+import * as ImagePicker from 'expo-image-picker';
 import { PermissionStatus } from '@/types';
 
 export const requestPhotoLibraryPermission = async (): Promise<PermissionStatus> => {
   try {
-    const { status } = await MediaLibrary.requestPermissionsAsync();
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    // status can be 'granted', 'denied', or 'undetermined'
     return status as PermissionStatus;
   } catch (error) {
     console.error('Error requesting photo library permission:', error);
@@ -13,7 +14,7 @@ export const requestPhotoLibraryPermission = async (): Promise<PermissionStatus>
 
 export const getPhotoLibraryPermission = async (): Promise<PermissionStatus> => {
   try {
-    const { status } = await MediaLibrary.getPermissionsAsync();
+    const { status } = await ImagePicker.getMediaLibraryPermissionsAsync();
     return status as PermissionStatus;
   } catch (error) {
     console.error('Error getting photo library permission:', error);
